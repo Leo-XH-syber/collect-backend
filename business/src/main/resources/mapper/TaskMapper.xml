@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backendcollect.mapperservice.TaskMapper">
+    <resultMap id="BaseResultMap" type="com.example.backendcollect.po.Task">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="employer_id" jdbcType="INTEGER" property="employerId"/>
+        <result column="task_name" jdbcType="VARCHAR" property="taskName"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="task_kind" jdbcType="INTEGER" property="taskKind"/>
+        <result column="task_difficulty" jdbcType="INTEGER" property="difficulty"/>
+        <result column="task_os" jdbcType="INTEGER" property="OS"/>
+        <result column="need_workers" jdbcType="INTEGER" property="needWorkers"/>
+        <result column="has_workers" jdbcType="INTEGER" property="hasWorkers"/>
+        <result column="task_state" jdbcType="INTEGER" property="taskState"/>
+        <result column="test_app" jdbcType="VARCHAR" property="testApp"/>
+        <result column="test_doc" jdbcType="VARCHAR" property="testDoc"/>
+        <result column="introduction" jdbcType="LONGVARCHAR" property="introduction"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from task
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.example.backendcollect.po.Task" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into task (id, employer_id, task_name,
+                          start_time, end_time, task_kind,
+                          task_difficulty, task_os, need_workers,
+                          has_workers, task_state, test_app,
+                          test_doc, introduction)
+        values (#{id,jdbcType=INTEGER}, #{employerId,jdbcType=INTEGER}, #{taskName,jdbcType=VARCHAR},
+                #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{taskKind,jdbcType=INTEGER},
+                #{difficulty,jdbcType=INTEGER}, #{OS,jdbcType=INTEGER}, #{needWorkers,jdbcType=INTEGER},
+                #{hasWorkers,jdbcType=INTEGER}, #{taskState,jdbcType=INTEGER}, #{testApp,jdbcType=VARCHAR},
+                #{testDoc,jdbcType=VARCHAR}, #{introduction,jdbcType=LONGVARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.example.backendcollect.po.Task">
+        update task
+        set employer_id     = #{employerId,jdbcType=INTEGER},
+            task_name       = #{taskName,jdbcType=VARCHAR},
+            start_time      = #{startTime,jdbcType=TIMESTAMP},
+            end_time        = #{endTime,jdbcType=TIMESTAMP},
+            task_kind       = #{taskKind,jdbcType=INTEGER},
+            task_difficulty = #{difficulty,jdbcType=INTEGER},
+            task_os         = #{OS,jdbcType=INTEGER},
+            need_workers    = #{needWorkers,jdbcType=INTEGER},
+            has_workers     = #{hasWorkers,jdbcType=INTEGER},
+            task_state      = #{taskState,jdbcType=INTEGER},
+            test_app        = #{testApp,jdbcType=VARCHAR},
+            test_doc        = #{testDoc,jdbcType=VARCHAR},
+            introduction    = #{introduction,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select id,
+               employer_id,
+               task_name,
+               start_time,
+               end_time,
+               task_kind,
+               task_difficulty,
+               task_os,
+               need_workers,
+               has_workers,
+               task_state,
+               test_app,
+               test_doc,
+               introduction
+        from task
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id,
+               employer_id,
+               task_name,
+               start_time,
+               end_time,
+               task_kind,
+               task_difficulty,
+               task_os,
+               need_workers,
+               has_workers,
+               task_state,
+               test_app,
+               test_doc,
+               introduction
+        from task
+    </select>
+    <select id="selectByEmployerId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select id,
+               employer_id,
+               task_name,
+               start_time,
+               end_time,
+               task_kind,
+               need_workers,
+               has_workers,
+               task_state,
+               test_app,
+               test_doc,
+               introduction,
+               task_os,
+               task_difficulty
+        from task
+        where employer_id = #{uid,jdbcType=INTEGER}
+          and task_state = #{taskState,jdbcType=INTEGER}
+    </select>
+    <select id="selectAllValid" resultMap="BaseResultMap">
+        select id,
+               employer_id,
+               task_name,
+               start_time,
+               end_time,
+               task_kind,
+               need_workers,
+               has_workers,
+               task_state,
+               test_app,
+               test_doc,
+               introduction,
+               task_os,
+               task_difficulty
+        from task
+        where task_state = 0
+        order by id
+    </select>
+    <select id="selectAllValidDesc" resultMap="BaseResultMap">
+        select id,
+               employer_id,
+               task_name,
+               start_time,
+               end_time,
+               task_kind,
+               need_workers,
+               has_workers,
+               task_state,
+               test_app,
+               test_doc,
+               introduction,
+               task_os,
+               task_difficulty
+        from task
+        where task_state = 0
+        order by id desc
+    </select>
+    <select id="selectIdInSets" parameterType="list" resultMap="BaseResultMap">
+        select id, employer_id, task_name, start_time, end_time, task_kind, need_workers,
+        has_workers, task_state, test_app, test_doc, introduction,task_os,task_difficulty
+        from task
+        where task_state=0 and id in
+        <foreach collection="ids" item="item_id" separator="," open="(" close=")" index="">
+            #{item_id,jdbcType=INTEGER}
+        </foreach>
+    </select>
+    <select id="selectByTaskKind" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select id,
+               employer_id,
+               task_name,
+               start_time,
+               end_time,
+               task_kind,
+               task_difficulty,
+               task_os,
+               need_workers,
+               has_workers,
+               task_state,
+               test_app,
+               test_doc,
+               introduction
+        from task
+        where task_kind = #{kind,jdbcType=INTEGER}
+          and task_state = 0
+        ORDER BY RAND()
+        LIMIT #{limit,jdbcType=INTEGER}
+    </select>
+</mapper>

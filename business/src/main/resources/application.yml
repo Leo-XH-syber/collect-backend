@@ -1,0 +1,5 @@
+spring:
+  profiles:
+    #   merge 至 main 分支前切换至 prod 环境
+    # 不必了, 直接 mvn package -P prod
+    active: '@env@'

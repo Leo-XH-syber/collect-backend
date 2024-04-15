@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backendcollect.mapperservice.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.example.backendcollect.po.Order">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="worker_id" jdbcType="INTEGER" property="workerId"/>
+        <result column="task_id" jdbcType="INTEGER" property="taskId"/>
+        <result column="select_time" jdbcType="TIMESTAMP" property="selectTime"/>
+        <result column="order_state" jdbcType="INTEGER" property="orderState"/>
+    </resultMap>
+    <resultMap id="TaskResultMap" type="com.example.backendcollect.po.Task">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="employer_id" jdbcType="INTEGER" property="employerId"/>
+        <result column="task_name" jdbcType="VARCHAR" property="taskName"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="task_kind" jdbcType="INTEGER" property="taskKind"/>
+        <result column="task_difficulty" jdbcType="INTEGER" property="difficulty"/>
+        <result column="task_os" jdbcType="INTEGER" property="OS"/>
+        <result column="need_workers" jdbcType="INTEGER" property="needWorkers"/>
+        <result column="has_workers" jdbcType="INTEGER" property="hasWorkers"/>
+        <result column="task_state" jdbcType="INTEGER" property="taskState"/>
+        <result column="test_app" jdbcType="VARCHAR" property="testApp"/>
+        <result column="test_doc" jdbcType="VARCHAR" property="testDoc"/>
+        <result column="introduction" jdbcType="LONGVARCHAR" property="introduction"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from `order`
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.example.backendcollect.po.Order" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into `order` (id, worker_id, task_id,
+                             select_time, order_state)
+        values (#{id,jdbcType=INTEGER}, #{workerId,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER},
+                #{selectTime,jdbcType=TIMESTAMP}, #{orderState,jdbcType=INTEGER})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.example.backendcollect.po.Order">
+        update `order`
+        set worker_id   = #{workerId,jdbcType=INTEGER},
+            task_id     = #{taskId,jdbcType=INTEGER},
+            select_time = #{selectTime,jdbcType=TIMESTAMP},
+            order_state = #{orderState,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select id, worker_id, task_id, select_time, order_state
+        from `order`
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id, worker_id, task_id, select_time, order_state
+        from `order`
+    </select>
+    <select id="selectByWorkerId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select id, worker_id, task_id, select_time, order_state
+        from `order`
+        where worker_id = #{uid,jdbcType=INTEGER}
+          and order_state = #{orderState,jdbcType=INTEGER}
+    </select>
+    <!--    selectAllByWorkerId-->
+    <select id="selectAllByWorkerId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select id, worker_id, task_id, select_time, order_state
+        from `order`
+        where worker_id = #{uid,jdbcType=INTEGER}
+    </select>
+    <select id="selectByWorkerIdAndTaskId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select id, worker_id, task_id, select_time, order_state
+        from `order`
+        where worker_id = #{uid,jdbcType=INTEGER}
+          and task_id = #{taskId,jdbcType=INTEGER}
+    </select>
+    <update id="updateOrderState" parameterType="java.lang.Integer">
+        update `order`
+        set order_state = #{orderState,jdbcType=INTEGER}
+        where task_id = #{taskId,jdbcType=INTEGER}
+          and worker_id = #{workerId,jdbcType=INTEGER}
+          and order_state = 0;
+    </update>
+    <update id="updateOrderStateInt" parameterType="java.lang.Integer">
+        update `order`
+        set order_state = #{orderState,jdbcType=INTEGER}
+        where task_id = #{taskId,jdbcType=INTEGER}
+          and order_state = 0;
+    </update>
+
+    <!--    getWorkerTasksByWorkerId-->
+    <select id="getWorkerTaskKindsByWorkerId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select t.task_kind
+        from `order` o,
+             task t
+        where o.worker_id = #{uid,jdbcType=INTEGER}
+          and o.task_id = t.id
+        group by t.task_kind
+        order by count(t.task_kind) desc
+        LIMIT 3
+    </select>
+    <select id="getWorkerOSKindsByWorkerId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select t.task_os
+        from `order` o,
+             task t
+        where o.worker_id = #{uid,jdbcType=INTEGER}
+          and o.task_id = t.id
+        group by t.task_os
+        order by count(t.task_kind) desc
+    </select>
+</mapper>

@@ -1,0 +1,76 @@
+# 本地测试用
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        domain: localhost
+service:
+  corsOrigin: "http://localhost:8081" # 指定前端指定域名
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:123456@127.0.0.1:27017/?authSource=admin # 就直接定了吧, 别的地方也没用
+      database: recommender
+
+  # 我忘记设密码了
+  redis:
+    host: localhost
+    port: 6379
+    lettuce:
+      pool:
+        max-active: 1024
+        max-wait: -1s
+        max-idle: 200
+  # 热部署
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+
+  # 这肯定要改啊, 我的密码完全暴露了, 代码会公开的
+  rabbitmq:
+    host: rabbitmq.bilibilianime.com
+    username: Rikka
+    password: Ayasa20000622
+    virtual-host: /
+    connection-timeout: 15000
+    #开启 return 确认机制
+    publisher-returns: true
+    #设置为 true 后 消费者在消息没有被路由到合适队列情况下会被return监听，而不会自动删除
+    template.mandatory: true
+    #开启 confirm 确认机制
+    publisher-confirm-type: correlated
+    #采用手动应答
+    listener:
+      simple:
+        acknowledge-mode: manual
+
+  datasource:
+    name: collect
+    url: jdbc:mysql://127.0.0.1:3306/COLLECT?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+    username: root
+    password: "123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+  # 搁这儿掩耳盗铃呢
+  qcloud:
+    SecretId: AKIDqWv4ybx2JPHtGOGtGPIwLVQ5UeZEdnhM
+    SecretKey: RdZGiuqVt0rRkmZ6UcWAZjgOq2yf7KHy
+    area: ap-shanghai
+    bucketName: "rikka-1305663872"
+    prefix: rikka
+    url: https://rikka-1305663872.cos.ap-shanghai.myqcloud.com
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.example.backendcollect.po
+
+logging:
+  config: classpath:logback-dev.xml

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backendcollect.mapperservice.WorkerPropertyMapper">
+  <resultMap id="BaseResultMap" type="com.example.backendcollect.po.WorkerProperty">
+    <id column="worker_id" jdbcType="INTEGER" property="workerId" />
+    <result column="ability" jdbcType="DOUBLE" property="ability" />
+    <result column="activity" jdbcType="INTEGER" property="activity" />
+    <result column="default_os" jdbcType="INTEGER" property="defaultOs" />
+    <result column="preference" jdbcType="VARCHAR" property="preference" />
+    <result column="cooperation_ability" jdbcType="DOUBLE" property="cooperationAbility" />
+    <result column="criticism_ability" jdbcType="DOUBLE" property="criticismAbility" />
+    <result column="report_avg_criticism" jdbcType="DOUBLE" property="reportAvgCriticism" />
+    <result column="avg_repeatability" jdbcType="DOUBLE" property="avgRepeatability" />
+    <result column="task_count" jdbcType="INTEGER" property="taskCount" />
+    <result column="history_bug_count" jdbcType="INTEGER" property="historyBugCount" />
+    <result column="bug_report_proportion" jdbcType="DOUBLE" property="bugReportProportion" />
+    <result column="duplicate_index" jdbcType="DOUBLE" property="duplicateIndex" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from worker_property
+    where worker_id = #{workerId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.backendcollect.po.WorkerProperty">
+    insert into worker_property (worker_id, ability, activity,
+      default_os, preference, cooperation_ability,
+      criticism_ability, report_avg_criticism, avg_repeatability,
+      task_count, history_bug_count, bug_report_proportion,
+      duplicate_index)
+    values (#{workerId,jdbcType=INTEGER}, #{ability,jdbcType=DOUBLE}, #{activity,jdbcType=INTEGER},
+      #{defaultOs,jdbcType=INTEGER}, #{preference,jdbcType=VARCHAR}, #{cooperationAbility,jdbcType=DOUBLE},
+      #{criticismAbility,jdbcType=DOUBLE}, #{reportAvgCriticism,jdbcType=DOUBLE}, #{avgRepeatability,jdbcType=DOUBLE},
+      #{taskCount,jdbcType=INTEGER}, #{historyBugCount,jdbcType=INTEGER}, #{bugReportProportion,jdbcType=DOUBLE},
+      #{duplicateIndex,jdbcType=DOUBLE})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.backendcollect.po.WorkerProperty">
+    update worker_property
+    set ability = #{ability,jdbcType=DOUBLE},
+      activity = #{activity,jdbcType=INTEGER},
+      default_os = #{defaultOs,jdbcType=INTEGER},
+      preference = #{preference,jdbcType=VARCHAR},
+      cooperation_ability = #{cooperationAbility,jdbcType=DOUBLE},
+      criticism_ability = #{criticismAbility,jdbcType=DOUBLE},
+      report_avg_criticism = #{reportAvgCriticism,jdbcType=DOUBLE},
+      avg_repeatability = #{avgRepeatability,jdbcType=DOUBLE},
+      task_count = #{taskCount,jdbcType=INTEGER},
+      history_bug_count = #{historyBugCount,jdbcType=INTEGER},
+      bug_report_proportion = #{bugReportProportion,jdbcType=DOUBLE},
+      duplicate_index = #{duplicateIndex,jdbcType=DOUBLE}
+    where worker_id = #{workerId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select worker_id, ability, activity, default_os, preference, cooperation_ability,
+    criticism_ability, report_avg_criticism, avg_repeatability, task_count, history_bug_count,
+    bug_report_proportion, duplicate_index
+    from worker_property
+    where worker_id = #{workerId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select worker_id, ability, activity, default_os, preference, cooperation_ability,
+    criticism_ability, report_avg_criticism, avg_repeatability, task_count, history_bug_count,
+    bug_report_proportion, duplicate_index
+    from worker_property
+  </select>
+  <update id="updateActivityByWorkerIdInt" parameterType="java.lang.Integer">
+    update worker_property
+    set activity = activity + #{activity,jdbcType=INTEGER}
+    where worker_id = #{workerId,jdbcType=INTEGER}
+  </update>
+  <select id="getWorkerAbility" parameterType="java.lang.Integer" resultType="java.lang.Double">
+    select  avg(c.score) as ability
+    from worker_property w,report r,report_criticism c
+    where w.worker_id=#{workerId,jdbcType=INTEGER} and w.worker_id=r.worker_id and r.id=c.report_id
+  </select>
+  <update id="updateTaskCountByWorkerId" parameterType="java.lang.Integer">
+    update worker_property
+    set task_count = task_count + 1
+    where worker_id = #{workerId,jdbcType=INTEGER}
+  </update>
+  <update id="updateBugReportCountByWorkerId" parameterType="java.lang.Integer">
+    update worker_property
+    set history_bug_count = history_bug_count + 1
+    where worker_id = #{workerId,jdbcType=INTEGER}
+  </update>
+</mapper>

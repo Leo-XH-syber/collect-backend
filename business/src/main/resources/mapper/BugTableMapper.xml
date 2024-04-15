@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backendcollect.mapperservice.BugTableMapper">
+  <resultMap id="BaseResultMap" type="com.example.backendcollect.po.BugTable">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="bug_name" jdbcType="VARCHAR" property="bugName" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from bug_table
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.backendcollect.po.BugTable">
+    insert into bug_table (id, task_id, bug_name
+      )
+    values (#{id,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{bugName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.backendcollect.po.BugTable">
+    update bug_table
+    set task_id = #{taskId,jdbcType=INTEGER},
+      bug_name = #{bugName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, task_id, bug_name
+    from bug_table
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, task_id, bug_name
+    from bug_table
+  </select>
+
+  <select id="selectByTaskId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, task_id, bug_name
+    from bug_table
+    where task_id=#{taskId,jdbcType=INTEGER}
+  </select>
+</mapper>

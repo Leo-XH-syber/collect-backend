@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backendcollect.mapperservice.CoReportMapper">
+  <resultMap id="BaseResultMap" type="com.example.backendcollect.po.CoReport">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="co_worker_id" jdbcType="INTEGER" property="workerId" />
+    <result column="origin_report_id" jdbcType="INTEGER" property="beCollaboratedReportId" />
+    <result column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="device_os" jdbcType="INTEGER" property="deviceOs" />
+    <result column="score_from_author" jdbcType="INTEGER" property="scoreFromAuthor" />
+    <result column="device_type" jdbcType="VARCHAR" property="deviceType" />
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+    <result column="recovery_step" jdbcType="LONGVARCHAR" property="recoveryStep" />
+    <result column="screenshot" jdbcType="LONGVARCHAR" property="screenshot" />
+    <result column="difficulty" jdbcType="INTEGER" property="difficulty" />
+
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cooperation_report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.backendcollect.po.CoReport">
+    insert into cooperation_report (id, co_worker_id, origin_report_id,
+      task_id, create_time, device_os,
+      score_from_author, device_type, description,
+      recovery_step, screenshot)
+    values (#{id,jdbcType=INTEGER}, #{workerId,jdbcType=INTEGER}, #{beCollaboratedReportId,jdbcType=INTEGER},
+      #{taskId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{deviceOs,jdbcType=INTEGER},
+      #{scoreFromAuthor,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR},
+      #{recoveryStep,jdbcType=LONGVARCHAR}, #{screenshot,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.backendcollect.po.CoReport">
+    update cooperation_report
+    set co_worker_id = #{workerId,jdbcType=INTEGER},
+      origin_report_id = #{beCollaboratedReportId,jdbcType=INTEGER},
+      task_id = #{taskId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      device_os = #{deviceOs,jdbcType=INTEGER},
+      score_from_author = #{scoreFromAuthor,jdbcType=INTEGER},
+      device_type = #{deviceType,jdbcType=VARCHAR},
+      description = #{description,jdbcType=LONGVARCHAR},
+      recovery_step = #{recoveryStep,jdbcType=LONGVARCHAR},
+      screenshot = #{screenshot,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, co_worker_id, origin_report_id, task_id, create_time, device_os, score_from_author,
+    device_type, description, recovery_step, screenshot
+    from cooperation_report
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, co_worker_id, origin_report_id, task_id, create_time, device_os, score_from_author,
+    device_type, description, recovery_step, screenshot
+    from cooperation_report
+  </select>
+
+  <select id="selectByOriginReport" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, co_worker_id, origin_report_id, task_id, create_time, device_os, score_from_author,
+    device_type, description, recovery_step, screenshot
+    from cooperation_report
+    where origin_report_id = #{originReportId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByWorkerAndOriginalReport" parameterType="java.lang.Integer"  resultMap="BaseResultMap">
+    select id, co_worker_id, origin_report_id, task_id, create_time, device_os, score_from_author,
+    device_type, description, recovery_step, screenshot
+    from cooperation_report
+    where origin_report_id = #{originReportId,jdbcType=INTEGER} and co_worker_id=#{workerId,jdbcType=INTEGER}
+  </select>
+  <update id="criticismByAuthor" parameterType="java.lang.Integer">
+    update cooperation_report
+    set score_from_author= #{score,jdbcType=INTEGER}
+    where id = #{coReportId,jdbcType=INTEGER}
+  </update>
+  <delete id="deleteAll">
+    delete from cooperation_report
+    where 1=1
+  </delete>
+
+<!--  selectByCoWorkerId-->
+  <select id="selectByCoWorkerId" parameterType="java.lang.Integer"  resultMap="BaseResultMap">
+    select c.id, c.co_worker_id, c.origin_report_id, c.task_id, c.create_time, c.device_os, c.score_from_author,
+    c.device_type, c.description, c.recovery_step, c.screenshot, t.task_difficulty as difficulty
+    from cooperation_report c, task t
+    where c.co_worker_id=#{workerId,jdbcType=INTEGER} and c.task_id=t.id
+  </select>
+</mapper>

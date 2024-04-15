@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backendcollect.mapperservice.CriticismMapper">
+  <resultMap id="BaseResultMap" type="com.example.backendcollect.po.Criticism">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="report_id" jdbcType="INTEGER" property="reportId" />
+    <result column="worker_id" jdbcType="INTEGER" property="workerId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="comments" jdbcType="LONGVARCHAR" property="comments" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from report_criticism
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.backendcollect.po.Criticism"   useGeneratedKeys="true"
+          keyProperty="id">
+    insert into report_criticism (id, report_id, worker_id,
+      create_time, score, comments
+      )
+    values (#{id,jdbcType=INTEGER}, #{reportId,jdbcType=INTEGER}, #{workerId,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{score,jdbcType=INTEGER}, #{comments,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.backendcollect.po.Criticism">
+    update report_criticism
+    set report_id = #{reportId,jdbcType=INTEGER},
+      worker_id = #{workerId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      score = #{score,jdbcType=INTEGER},
+      comments = #{comments,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, report_id, worker_id, create_time, score, comments
+    from report_criticism
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, report_id, worker_id, create_time, score, comments
+    from report_criticism
+  </select>
+  <select id="selectByUserAndReport" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, report_id, worker_id, create_time, score, comments
+    from report_criticism
+    where worker_id = #{workerId,jdbcType=INTEGER} and report_id  = #{reportId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByReport" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, report_id, worker_id, create_time, score, comments
+    from report_criticism
+    where report_id  = #{reportId,jdbcType=INTEGER}
+  </select>
+  <select id="getAvgScoreByReport" parameterType="java.lang.Integer" resultType="double">
+    select avg(score)
+    from report_criticism
+    where report_id  = #{reportId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByWorkerId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, report_id, worker_id, create_time, score, comments
+    from report_criticism
+    where worker_id  = #{workerId,jdbcType=INTEGER}
+  </select>
+  <select id="getAverageCriticismNumOfWorkersReports" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select avg(criticism_count)
+    from (select count(c.id) criticism_count
+      from report r,report_criticism c
+      where r.worker_id=#{workerId,jdbcType=INTEGER} and r.id=c.report_id
+      group by r.id) as criticism_count;
+  </select>
+</mapper>

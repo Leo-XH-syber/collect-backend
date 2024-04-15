@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backendcollect.mapperservice.ReportMapper">
+  <resultMap id="BaseResultMap" type="com.example.backendcollect.po.Report">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="worker_id" jdbcType="INTEGER" property="workerId" />
+    <result column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="device_os" jdbcType="INTEGER" property="deviceOs" />
+    <result column="device_type" jdbcType="VARCHAR" property="deviceType" />
+    <result column="bug_report" jdbcType="INTEGER" property="bugReport" />
+    <result column="BUG_ID" jdbcType="INTEGER" property="bugId" />
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+    <result column="recovery_step" jdbcType="LONGVARCHAR" property="recoveryStep" />
+    <result column="screenshot" jdbcType="LONGVARCHAR" property="screenshot" />
+    <result column="task_difficulty" jdbcType="INTEGER" property="difficulty" />
+
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from report
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.backendcollect.po.Report">
+    insert into report (id, worker_id, task_id,
+      create_time, device_os, device_type,
+      bug_report, BUG_ID, description,
+      recovery_step, screenshot)
+    values (#{id,jdbcType=INTEGER}, #{workerId,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{deviceOs,jdbcType=INTEGER}, #{deviceType,jdbcType=VARCHAR},
+      #{bugReport,jdbcType=INTEGER}, #{bugId,jdbcType=INTEGER}, #{description,jdbcType=LONGVARCHAR},
+      #{recoveryStep,jdbcType=LONGVARCHAR}, #{screenshot,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.backendcollect.po.Report">
+    update report
+    set worker_id = #{workerId,jdbcType=INTEGER},
+      task_id = #{taskId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      device_os = #{deviceOs,jdbcType=INTEGER},
+      device_type = #{deviceType,jdbcType=VARCHAR},
+      bug_report = #{bugReport,jdbcType=INTEGER},
+      BUG_ID = #{bugId,jdbcType=INTEGER},
+      description = #{description,jdbcType=LONGVARCHAR},
+      recovery_step = #{recoveryStep,jdbcType=LONGVARCHAR},
+      screenshot = #{screenshot,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, worker_id, task_id, create_time, device_os, device_type, bug_report, BUG_ID,
+    description, recovery_step, screenshot
+    from report
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, worker_id, task_id, create_time, device_os, device_type, bug_report, BUG_ID,
+    description, recovery_step, screenshot
+    from report
+  </select>
+
+  <select id="selectByUserAndTask" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, worker_id, task_id, create_time, device_os, device_type, bug_report, BUG_ID,description, recovery_step, screenshot
+    from report
+    where worker_id = #{uid,jdbcType=INTEGER} and task_id = #{taskId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByTask" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, worker_id, task_id, create_time, device_os, device_type, bug_report, BUG_ID,
+    description, recovery_step, screenshot
+    from report
+    where task_id = #{taskId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByWorker" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select r.id, r.worker_id, r.task_id, r.create_time, r.device_os, r.device_type,r.bug_report, r.BUG_ID, r.description, r.recovery_step, r.screenshot
+    from report r
+    where worker_id = #{workerId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByTaskOrderByScoreAsc" parameterType="java.lang.Integer" resultType="com.example.backendcollect.po.Report">
+    select r.id as id, r.worker_id as workerId, r.task_id as taskId, r.create_time as createTime,r.bug_report, r.BUG_ID,r.description, r.recovery_step as recoveryStep, r.device_os as deviceOs,r.device_type as deviceType,r.screenshot, avg(c.score) avg_score
+    from report r, report_criticism c
+    where r.task_id =#{taskId,jdbcType=INTEGER}  and r.id=c.report_id
+    group by r.id
+    UNION
+    select r.id as id, r.worker_id as workerId, r.task_id as taskId, r.create_time as createTime,r.description, r.BUG_ID,r.description, r.recovery_step as recoveryStep, r.device_os as deviceOs,r.device_type as deviceType,r.screenshot, 0 avg_score
+    from report r
+    where  r.id not in (select distinct report_id from report_criticism) and r.task_id =#{taskId,jdbcType=INTEGER}
+    group by r.id
+    order by avg_score
+  </select>
+  <select id="selectByTaskOrderByScoreDesc" parameterType="java.lang.Integer" resultType="com.example.backendcollect.po.Report">
+    select r.id as id, r.worker_id as workerId, r.task_id as taskId, r.create_time as createTime,r.bug_report, r.BUG_ID,r.description, r.recovery_step as recoveryStep, r.device_os as deviceOs,r.device_type as deviceType,r.screenshot, avg(c.score) avg_score
+    from report r, report_criticism c
+    where r.task_id =#{taskId,jdbcType=INTEGER}  and r.id=c.report_id
+    group by r.id
+    UNION
+    select r.id as id, r.worker_id as workerId, r.task_id as taskId, r.create_time as createTime, r.BUG_ID,r.description,r.description, r.recovery_step as recoveryStep, r.device_os as deviceOs,r.device_type as deviceType,r.screenshot, 0 avg_score
+    from report r
+    where  r.id not in (select distinct report_id from report_criticism) and r.task_id =#{taskId,jdbcType=INTEGER}
+    group by r.id
+    order by avg_score
+            DESC
+  </select>
+
+  <update id="setBugType" parameterType="java.lang.Integer">
+    update report
+    set  bug_report = #{bugReport,jdbcType=INTEGER},
+         BUG_ID = #{bugID,jdbcType=INTEGER}
+    where id = #{reportId,jdbcType=INTEGER}
+  </update>
+  <select id="getBugReportPercentageByWorkerId" parameterType="java.lang.Integer" resultType="java.lang.Double">
+    select w.history_bug_count/count(r.id)
+    from report r, worker_property w
+    where r.worker_id = #{workerId,jdbcType=INTEGER} and w.worker_id=#{workerId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectWithScoreAndDifficultyByWorker" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select r.id, r.worker_id, r.task_id, r.create_time, r.device_os, r.device_type, r.bug_report, r.BUG_ID,r.description,
+       r.recovery_step, r.screenshot , t.task_difficulty, avg(c.score) avg_score
+    from report r,task t,report_criticism c
+    where r.worker_id = #{workerId,jdbcType=INTEGER} and r.task_id=t.id and r.id=c.report_id
+    group by c.report_id
+  </select>
+<!--  selectBugReportByWorkerId-->
+  <select id="selectBugReportByWorkerId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select r.id, r.worker_id, r.task_id, r.create_time, r.device_os, r.device_type,r.bug_report,r.BUG_ID ,r.description,
+       r.recovery_step, r.screenshot
+    from report r
+    where r.worker_id = #{workerId,jdbcType=INTEGER} and r.bug_report=1
+  </select>
+<!--  getRepeatNumBybugId-->
+  <select id="getRepeatNumByBugId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select count(*)
+    from report r
+    where r.bug_report=2 and r.BUG_ID= #{bugId,jdbcType=INTEGER}
+  </select>
+
+
+</mapper>
